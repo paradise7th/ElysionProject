@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<!-- ConfigFile for ConnectionManager 1.0-->
+<connections>
+	<connection>
+		<name>ACCESS</name>
+		<driver>sun.jdbc.odbc.JdbcOdbcDriver</driver>
+		<url>jdbc:odbc:test</url>
+		<user>w</user>
+		<password>jkkj_2004</password>
+		<max>1</max>
+	</connection>
+</connections>
