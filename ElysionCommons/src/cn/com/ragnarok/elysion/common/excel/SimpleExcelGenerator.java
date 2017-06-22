@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import jxl.CellView;
 import jxl.Workbook;
 import jxl.format.Alignment;
 import jxl.format.Border;
@@ -46,6 +47,7 @@ public class SimpleExcelGenerator
   private String filename;
   private String[] colNames;
   private String[] mappingNames;
+  private int[] colWidths=new int[]{};
   private Hashtable mappings=new Hashtable();
   private List data;
   private WritableCellFormat titleFormat;
@@ -109,7 +111,13 @@ public class SimpleExcelGenerator
   public void setSheetName(String name){
     this.sheetName=name;
   }
-
+/**
+ * 设置每列宽度
+ * @param colwidth
+ */
+  public void setColumnWidth(int[] colwidth){
+	  this.colWidths=colwidth;
+  }
 
 
   /**
@@ -205,6 +213,20 @@ public class SimpleExcelGenerator
       }
       rowindex++;
     }
+    
+    CellView cellView = new CellView();  
+    cellView.setAutosize(true); //设置自动大小  
+    for(int i = 0;i < cols;i++){
+    	if(i<colWidths.length && colWidths[i]>=0){
+    		ws.setColumnView(i, colWidths[i]);    		     		    			
+    	}else{
+    		ws.setColumnView(i, cellView);//根据内容自动设置列宽  
+    	}
+    	
+	 }
+    
+
+    
     wwb.write();
     wwb.close();
     log.info("EXCEL生成完成:"+(rowindex)+"行 " +filename);
@@ -241,7 +263,7 @@ public class SimpleExcelGenerator
     data.add(line1);
 
     Hashtable line2=new Hashtable();
-   line2.put("name","都会恢复2");
+   line2.put("name","都会恢复2333333333333333333");
    line2.put("age","12");
    line2.put("date","");
    data.add(line2);

@@ -2,11 +2,16 @@
 package cn.com.ragnarok.elysion.common.excel;
 
 import java.io.File;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import cn.com.ragnarok.elysion.common.util.DateUtil;
+
 import jxl.Cell;
+import jxl.CellType;
+import jxl.DateCell;
 import jxl.Sheet;
 import jxl.Workbook;
 /**
@@ -68,7 +73,14 @@ public class ExcelLoader {
         for (int r = start; r < end; r++) {
             for (int c = 0; c < cols; c++) {
                 Cell cell=sheet.getCell(c,r);
-                data[r-start][c]=cell.getContents();
+                if(cell.getType()==CellType.DATE_FORMULA ||cell.getType()==CellType.DATE ){
+                	DateCell dc=(DateCell) cell;
+                	if(dc.getContents()!=null){
+                		data[r-start][c]=DateUtil.formatDateTime(new Date(dc.getDate().getTime()-8*60*60*1000));
+                	}
+                }else{
+                	data[r-start][c]=cell.getContents();                	
+                }
                 //log.info((r-start)+"-"+c+" "+cell.getContents());
             }
         }

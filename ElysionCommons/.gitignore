@@ -1,3 +1,5 @@
 /build
 /logs
 /config_bk
+/testdb
+/derby.log

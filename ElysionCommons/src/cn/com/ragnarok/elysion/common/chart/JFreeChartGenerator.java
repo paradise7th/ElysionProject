@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Paint;
 import java.awt.image.BufferedImage;
 import java.util.Date;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -19,6 +20,7 @@ import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
+import org.jfree.data.time.TimeSeries;
 import org.jfree.ui.RectangleInsets;
 
 public class JFreeChartGenerator {
@@ -140,6 +142,8 @@ public class JFreeChartGenerator {
   }
 
   private void repairFont(JFreeChart chart) {
+	  setTitleFont(new Font("黑体",Font.PLAIN,20));
+	  
 	  LegendTitle legend = chart.getLegend();
 	  
 	  legend.setItemFont(new Font("宋体", Font.PLAIN, 12));
@@ -180,7 +184,7 @@ public class JFreeChartGenerator {
 		
 	}
 
-private void outputTest() {
+public void outputTestFrame() {
    JFreeChart chart=generateChart();
 
 
@@ -197,7 +201,33 @@ private void outputTest() {
 
   }
 
-  public static void main(String[] args) {
+	public static void main(String[] args) {
+		TimeSeriesChartTemplate temp=new TimeSeriesChartTemplate();
+		TimeSeries tsout=temp.initData("流出");
+		TimeSeries tsin=temp.initData("流入");
+		Random r=new Random();
+		for (int i = 0; i < 20; i++) {
+			temp.addData(tsout, new Date(System.currentTimeMillis()+i*60*60*1000), r.nextInt(10000));
+			
+		}
+		
+		for (int i = 0; i < 20; i++) {
+			temp.addData(tsin, new Date(System.currentTimeMillis()+i*60*60*1000), r.nextInt(10000));
+			
+		}
+		temp.setLinePaint(new Color(23,255,23),new Color(23,23,255));
+		
+		
+		
+		JFreeChartGenerator gen=new JFreeChartGenerator();
+		gen.setTitle("测试");
+		gen.setTemplate(temp);
+		
+		
+		gen.outputTestFrame();
+	}
+
+  public static void mainx(String[] args) {
 //    TimeSeriesChartTemplate temp = new TimeSeriesChartTemplate();
 //    temp.initData("line1");
 //    temp.addData(new Year(1999),200);
@@ -250,6 +280,7 @@ private void outputTest() {
     temp.addData("test",90);
     temp.setLabelFormat("国家:{0} 价值:{1} 百分比:{2}");
     temp.setLegendFormat("国家:{0} 价值:{1} 百分比:{2}");
+    
 
 
     JFreeChartGenerator g = new JFreeChartGenerator();
@@ -264,7 +295,7 @@ private void outputTest() {
     g.setTitleFont(new Font("黑体",Font.PLAIN,22));
     g.setNoDataMessage("选择区间内无数据");
 
-    g.outputTest();
+    g.outputTestFrame();
   }
 
   public ChartTemplate getTemplate() {

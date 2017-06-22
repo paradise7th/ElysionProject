@@ -22,50 +22,60 @@ import org.jfree.data.time.TimeSeriesCollection;
 
 public class TimeSeriesChartTemplate implements ChartTemplate {
 
-  private TimeSeries tsData;
+  private TimeSeriesCollection tscollection;
+  
   private boolean showLine=true;
   private boolean showShape=false;
   private boolean showLabel=false;
   private String dateFormat;
   private Range valueRange;
-  private Paint linePaint;
-  private Shape shapePaint;
+  private Paint[] linePaint;
+  private Shape[] shapePaint;
 
 
 
   public TimeSeriesChartTemplate() {
+	  tscollection=new TimeSeriesCollection();
   }
 
 
 
-  public void clearData(){
-    if(tsData!=null){
-      tsData.clear();
-    }
+  public void clearData(int index){
+    tscollection.getSeries(index).clear();
+  }
+  
+  public void clearData(String name){
+	  TimeSeries ts= tscollection.getSeries(name);
+	  if(ts!=null){
+		ts.clear();  
+	  }
   }
 
-  public void setData(TimeSeries ts){
-    this.tsData=ts;
+  public void setData(TimeSeriesCollection tsc){
+    tscollection=tsc;
   }
 
-  public void initData(String name){
-    if(tsData==null){
-      tsData=new TimeSeries(name);
-    }
+  public TimeSeries initData(String name){
+	 TimeSeries ts= tscollection.getSeries(name);
+	 if(ts==null){
+		 ts=new TimeSeries(name);
+		 tscollection.addSeries(ts);
+	 }
+	 return ts;
   }
 
-  public void addData(Date time,double value){
-    addData(new Second(time),value);
+  public void addData(TimeSeries ts, Date time,double value){
+    addData(ts,new Second(time),value);
   }
 
-  public void addData(RegularTimePeriod time,double value){
-    if(tsData!=null){
-      tsData.addOrUpdate(time,value);
+  public void addData(TimeSeries ts,RegularTimePeriod time,double value){
+    if(ts!=null){
+      ts.addOrUpdate(time,value);
     }
   }
 
   public JFreeChart buildChart(String title,String x,String y,boolean legend){
-    JFreeChart chart=ChartFactory.createTimeSeriesChart(title,x,y,new TimeSeriesCollection(tsData),legend,false,false);
+    JFreeChart chart=ChartFactory.createTimeSeriesChart(title,x,y,tscollection,legend,false,false);
     
     XYPlot plot= chart.getXYPlot();
     XYItemRenderer render = plot.getRenderer();
@@ -79,11 +89,21 @@ public class TimeSeriesChartTemplate implements ChartTemplate {
         render.setBaseItemLabelsVisible(true);
       }
 
-      if(linePaint!=null){
-        xyrender.setSeriesPaint(0, linePaint);
+      if(linePaint!=null && linePaint.length>0){
+    	for (int i = 0; i < linePaint.length; i++) {
+    		if(linePaint[i]!=null){
+    			xyrender.setSeriesPaint(i, linePaint[i]);			    			
+    			xyrender.setSeriesFillPaint(i, linePaint[i]);
+    		}
+		}
       }
-      if(shapePaint!=null){
-        xyrender.setSeriesShape(0, shapePaint);
+      if(shapePaint!=null && shapePaint.length>0){
+    	 for (int i = 0; i < shapePaint.length; i++) {
+    		 if(shapePaint[i]!=null){
+    			 xyrender.setSeriesShape(i, shapePaint[i]);			    			 
+    		 }
+ 		}
+        
       }
 
     }
@@ -101,6 +121,7 @@ public class TimeSeriesChartTemplate implements ChartTemplate {
       numberAxis.setRange(valueRange);
     }
     numberAxis.setUpperMargin(0.10);
+    
 
     return chart;
   }
@@ -109,11 +130,11 @@ public class TimeSeriesChartTemplate implements ChartTemplate {
     this.dateFormat = dateFormat;
   }
 
-  public void setLinePaint(Paint linePaint) {
+  public void setLinePaint(Paint... linePaint) {
     this.linePaint = linePaint;
   }
 
-  public void setShapePaint(Shape shapePaint) {
+  public void setShapePaint(Shape... shapePaint) {
     this.shapePaint = shapePaint;
   }
 
